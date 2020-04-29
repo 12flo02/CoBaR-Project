@@ -67,19 +67,19 @@ def general_data(first_layer) :
     #find the right path for the .pkl and .npy 
     simulation = ['MDN', 'PR', 'SS01049', 'SS01054', 'SS01540', 'SS02111', 'SS02279', 'SS02377', 'SS02608', 'SS02617']
     
-    data_path = ['CoBar-Dataset/']
+    data_path = ['../CoBar-Dataset/']
     data_path.append(simulation[first_layer])
     data_path.append('/U3_f/')
     data_path.append(simulation[first_layer])
     data_path.append('_U3_f_trackingData.pkl')
     data_path = ''.join(data_path)
-    "output : 'CoBar-Dataset/MDN/U3_f/MDN_U3_f_trackingData.pkl'"
+    "output : '../CoBar-Dataset/MDN/U3_f/MDN_U3_f_trackingData.pkl'"
     
-    gen_path = ['CoBar-Dataset/']
+    gen_path = ['../CoBar-Dataset/']
     gen_path.append(simulation[first_layer])
     gen_path.append('/U3_f/genotype_dict.npy')
     gen_path = ''.join(gen_path)
-    "output : 'CoBar-Dataset/MDN/U3_f/genotype_dict.npy'"
+    "output : '../CoBar-Dataset/MDN/U3_f/genotype_dict.npy'"
     
 
     genDict = np.load(gen_path, allow_pickle=True).item()
