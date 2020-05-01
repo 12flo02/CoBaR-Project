@@ -465,9 +465,6 @@ def plot_speed_over_time(genDict, data, all_experiment, all_folder, fly_number =
         genDict_key.append(key)
     
     for i in range(0,len(all_experiment)) :
-
-        direction = np.zeros_like(delta_x)
-        theta_effective = np.zeros_like(delta_x)
         exp = all_experiment[i]
         
         
@@ -482,7 +479,10 @@ def plot_speed_over_time(genDict, data, all_experiment, all_folder, fly_number =
             
         
         time = np.arange(0,int(exp.total_frame/step) - 1)/exp.frame_frequency
-        delta_pos = (delta_x**2 + delta_y**2)**0.5  
+        delta_pos = (delta_x**2 + delta_y**2)**0.5
+        
+        direction = np.zeros_like(delta_x)
+        theta_effective = np.zeros_like(delta_x)
 
         
         for m in range(0, delta_x.shape[0]):
