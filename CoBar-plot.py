@@ -456,7 +456,8 @@ def plot_speed_over_time(genDict, data, all_experiment, all_folder, fly_number =
 # =============================================================================
     
     k = fly_number
-    color = environment.color_plot  
+    color = environment.color_plot
+    step = 1
     legend = []
     genDict_key = []
     
@@ -464,42 +465,73 @@ def plot_speed_over_time(genDict, data, all_experiment, all_folder, fly_number =
         genDict_key.append(key)
     
     for i in range(0,len(all_experiment)) :
+
+        direction = np.zeros_like(delta_x)
+        theta_effective = np.zeros_like(delta_x)
         exp = all_experiment[i]
         
-        ############# FAUX LA VITESSE NE SE CALCLE PAS COMME CA
-        absolute_pos = (exp.x_pos_n**2 + exp.y_pos_n**2)**0.5
-        time = np.arange(0,exp.total_frame)/exp.frame_frequency
-        stim_time = np.array(exp.frame_per_period_tot[1:])/exp.frame_frequency
         
+        delta_x = np.array([exp.x_pos[:, step*n] - exp.x_pos[:, step*(n-1)] \
+                            for n in range(1, int(exp.frame_per_period_tot[-1]/step))]).T
+            
+        delta_y = np.array([exp.y_pos[:, n] - exp.y_pos[:, n-1] \
+                            for n in range(1, int(exp.frame_per_period_tot[-1]/step))]).T
+            
+        theta = np.array([exp.orientation[:, step*n] \
+                          for n in range(0, int(exp.frame_per_period_tot[-1]/step) - 1)]).T    
+            
+        
+        time = np.arange(0,int(exp.total_frame/step) - 1)/exp.frame_frequency
+        delta_pos = (delta_x**2 + delta_y**2)**0.5  
+
+        
+        for m in range(0, delta_x.shape[0]):
+            for n in range(0, delta_y.shape[1]):
+                theta_effective[m,n] = math.atan2(delta_x[m, n], (-delta_y[m, n])) * 360/(2*math.pi)
+                
+           
+                if 90 <= theta[m,n] <= 270:
+                    if (theta[m,n] - 90) < (theta_effective[m, n] % 360) <= (theta[m,n] + 90):
+                        direction[m, n] = 1
+                    else:
+                        direction[m, n] = -1
+                        
+                elif theta[m, n] < 90 :
+                    if (theta[m,n] - 90) < theta_effective[m, n] <= (theta[m,n] + 90):
+                        direction[m, n] = 1
+                    else:
+                        direction[m, n] = -1
+                    
+                else:
+                    if (theta[m,n] - 360 - 90) < theta_effective[m, n] <= ((theta[m,n] + 90) % 360):
+                        direction[m, n] = 1
+                    else:
+                        direction[m, n] = -1
+                        
+                                    
+        # convert mm to m
+        velocity = direction * delta_pos *  exp.frame_frequency / (step*100)
         
         plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : speed")
         plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : speed")
-        
-        
-        
+
         for j in range (1, len(exp.frame_per_period_tot)): 
-            
-            delta_pos = np.array([absolute_pos[:, n] - absolute_pos[:, n-1] \
-                                  for n in range(exp.frame_per_period_tot[j-1], \
-                                                 exp.frame_per_period_tot[j] - 1)])
-                
-            speed = (delta_pos.T)/exp.frame_frequency
              
             #the "off" period
             if (j % 2 == 0) :
-                plt.scatter(time[(exp.frame_per_period_tot[j-1] + 1) : (exp.frame_per_period_tot[j] - 1)], 
-                         speed[k, 1:], c='r', s = 1)
+                plt.scatter(time[(int(exp.frame_per_period_tot[j-1]/step)) : int((exp.frame_per_period_tot[j]/step - 1))], 
+                            velocity[k, (int(exp.frame_per_period_tot[j-1]/step)) : int((exp.frame_per_period_tot[j]/step - 1))], c='r', s = 1)
             #the "on" period
             else :
-                plt.scatter(time[(exp.frame_per_period_tot[j-1] + 1) : (exp.frame_per_period_tot[j] - 1)], 
-                         speed[k, 1:], c='b', s = 1)
+                plt.scatter(time[(int(exp.frame_per_period_tot[j-1]/step)) : int((exp.frame_per_period_tot[j]/step - 1))], 
+                            velocity[k, (int(exp.frame_per_period_tot[j-1]/step)) : int((exp.frame_per_period_tot[j]/step - 1))], c='b', s = 1)
 
         # plt.legend(stim_legend)
         plt.xlabel("time [s]")
         plt.ylabel("velociy [m/s]")
+        # plt.ylim(-1,1)
         # plt.x_lim()
-
-   
+ 
     return
 
 #%%
