@@ -592,7 +592,7 @@ def plot_speed_over_time(genDict, data, all_experiment, all_folder, fly_number =
                 
         delta_pos = (delta_x**2 + delta_y**2)**0.5        
         # convert mm to m
-        velocity = direction * delta_pos *  exp.frame_frequency / (step*100)
+        velocity = direction * delta_pos *  exp.frame_frequency / (step)
 
         plt.figure(str(exp.simulation) + " " + str(genDict_key[2+k]) + " "  + str(exp.folder[7:13]) + " speed",
                    figsize = environment.figure_size,
@@ -609,8 +609,8 @@ def plot_speed_over_time(genDict, data, all_experiment, all_folder, fly_number =
 
         plt.legend(environment.stim_legend, loc=1)
         plt.xlabel("time [s]")
-        plt.ylabel("velociy [m/s]")
-        plt.ylim(-0.5,0.5)
+        plt.ylabel("velociy [mm/s]")
+        plt.ylim(-50,50)
         
         if environment.bool_save == True:
              plt.savefig(str(exp.simulation) + " " + str(genDict_key[2+k]) + " "  + str(exp.folder[7:13]) + " speed.png")
