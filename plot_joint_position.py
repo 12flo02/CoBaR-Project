@@ -702,71 +702,7 @@ def joint_position_over_time(genDict, data, all_experiment, all_folder, fly_numb
         x_pos_RH, y_pos_RH = any_coordinates(exp, data.RHtibiaTarsus.x, data.RHtibiaTarsus.y)
         x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RH, y_pos_RH)
 
-        
-        
-# =============================================================================
-# # =============================================================================
-# #         """ plotting the x position"""
-# #         plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " : Tarsus x position",
-# #                    figsize = environment.figure_size,
-# #                    dpi = environment.dpi)
-# #         plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " : Tarsus x position")
-# #         
-# #         for k in range(0,6) :
-# # 
-# #             plt.plot(x_pos_all[j, k*exp.frame_per_fly : (k+1)*exp.frame_per_fly] + x_plot_interval[k], time)
-# #             
-# #         plt.ylabel("time")
-# #         plt.xlabel("x joint position [mm]")
-# #         plt.ylim(0,30)
-# #         # plt.xlim(4,0)
-# #         plt.legend(legend, loc=1)
-# #         plt.show()
-# #         
-# #         
-# #         plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " : Tarsus x position fft",
-# #                    figsize = environment.figure_size,
-# #                    dpi = environment.dpi)
-# #         plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " : Tarsus x position fft")
-# #         
-# #             
-# #         for k in range(0,6) :  
-# #             
-# #             weight = np.array([])
-# #             w2 = np.array([])
-# #             y2 = np.array([])
-# #             N = exp.frame_per_fly 
-# #             
-# #             """ remove the first frequency that is way to high"""
-# #             weight = scipy.fftpack.fft(x_pos_all[j, k*exp.frame_per_fly : (k+1)*exp.frame_per_fly])[1:]
-# #             spectrum = weight**2
-# # 
-# #             cutoff_idx = spectrum < (spectrum.max()/15)
-# #             print(spectrum.max())
-# #             # cutoff_idx = spectrum < 500
-# #             w2 = weight.copy()
-# #             w2[cutoff_idx] = 0
-# #             
-# #             y2 = abs(scipy.fftpack.ifft(w2))
-# #             plt.plot(y2 + x_plot_interval_fft[k], time[1:])
-# # 
-# #         
-# #         plt.ylabel("time")
-# #         plt.xlabel("x joint position [mm]")
-# #         plt.ylim(0,30)
-# #         # plt.xlim(4,0)
-# #         plt.legend(legend, loc=1)
-# #         plt.show()
-# # =============================================================================
-# 
-# # =============================================================================
-# #         """ plotting the y position"""
-# #         plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " : Tarsus y position",
-# #                    figsize = environment.figure_size,
-# #                    dpi = environment.dpi)
-# #         plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " : Tarsus y position")
-# # =============================================================================
-# =============================================================================
+  
         """ Y POSITION"""
         for j in range(1, len(exp.frame_per_period_tot)): 
             
@@ -823,107 +759,103 @@ def joint_position_over_time(genDict, data, all_experiment, all_folder, fly_numb
         else:
             plt.show()
         
-        
-        
-        
-        
-# =============================================================================
-#         """ SPEED OF LIMB"""
-#         plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus y speed",
-#                    figsize = environment.figure_size,
-#                    dpi = environment.dpi)
-#         plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus y speed")
-#                 
-#         gait_pattern = np.zeros((11*6, exp.frame_per_fly - 6))
-#         legend_postion = 11*np.arange(6) + 5
-#         
-#         for l in range(0,6) :
-#             start_index = l*exp.frame_per_fly
-#             delta_pos = np.array([np.subtract(y_pos_all[k, i+1], y_pos_all[k, i]) for i in range(l*exp.frame_per_fly, (l+1)*exp.frame_per_fly - 1)])
-#             SMA_pos = np.array([sum(delta_pos[(i - 5): i]/5) for i in range(5, len(delta_pos))])
-#             SMA_speed = SMA_pos/exp.frame_frequency
-#             speed_sign = np.heaviside(SMA_speed, 0)
-#             speed_sign = np.repeat(speed_sign.reshape((1, len(speed_sign))), 10, axis = 0)
-#             # speed_sign = np.sign(SMA_speed)
-#             
-#             """ plot the on1 sequence"""
-#             gait_pattern[11*l : 11*l + 10, :] = speed_sign
-#             
-#         plt.spy(gait_pattern[:, exp.frame_per_period_tot[1]:exp.frame_per_period_tot[2]], markersize=1, aspect = "equal", c='k')
-#         plt.xticks([])
-#         plt.yticks(legend_postion, ("LF", "LM", "LH", "RF", "RM", "RH"))
-#         plt.show()
-# =============================================================================
-# =============================================================================
-#             start_index = l*exp.frame_per_fly
-#             SMA_pos = np.array([sum(y_pos_all[k, i: i+5]/5) for i in range(l*exp.frame_per_fly, (l+1)*exp.frame_per_fly - 5)])
-#             delta_pos = np.array([np.subtract(SMA_pos[i+1], SMA_pos[i]) for i in range(len(SMA_pos) - 1)])            
-#             SMA_speed = delta_pos/exp.frame_frequency
-#             print(str(l))
-# =============================================================================
-
-
-            
-          
-# =============================================================================
-#             plt.plot(time[:-6], 1000*SMA_speed + 2)
-#             plt.plot(time[:-6], gait_cycle, c='k')
-#                                        
-#             plt.ylabel("y joint speed [mm/s]")
-#             plt.xlabel("time")
-#             plt.xlim(13.5, 16,5)
-#             plt.legend(legend, loc=1, fontsize = 6)
-#             plt.show()
-# =============================================================================
-        
-        
  
-        
-        
-        
+    return
+
+
+def gait_cycle(genDict, data, all_experiment, all_folder, fly_number = 0):
+    
 # =============================================================================
-#         plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " : Tarsus y position fft",
-#                    figsize = environment.figure_size,
-#                    dpi = environment.dpi)
-#         plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " : Tarsus y position fft")
-#         
-#             
-#         for k in range(0,6) :  
-#             
-#             weight = np.array([])
-#             w2 = np.array([])
-#             y2 = np.array([])
-#             N = exp.frame_per_fly 
-#             
-#             """ remove the first frequency that is way to high"""
-#             weight = scipy.fftpack.fft(y_pos_all[j, k*exp.frame_per_fly : (k+1)*exp.frame_per_fly])[1:]
-#             spectrum = weight**2
-# 
-#             cutoff_idx = spectrum < (spectrum.max()/40)
-#             print(spectrum.max())
-#             # cutoff_idx = spectrum < 500
-#             w2 = weight.copy()
-#             w2[cutoff_idx] = 0
-#             
-#             y2 = abs(scipy.fftpack.ifft(w2))
-#             plt.plot(time[1:], y2 + y_plot_interval_fft[k])
-# 
-#         
-#         plt.ylabel("y joint position [mm]")
-#         plt.xlabel("time")
-#         plt.xlim(0,5)
-#         # plt.xlim(4,0)
-#         plt.legend(legend, loc=1)
-#         plt.show()
+#     """ to extract x and y position of any data.keys(), 
+#         example : Leye.x, Rantenna.y"""
 # =============================================================================
 
+    k = fly_number
+    color = environment.color_plot
+    step = 1
+    legend = []
+    genDict_key = []
+    stim_key = genDict[all_experiment[0].folder]['stimulation_paradigm']
+    legend = ["Left Fore", "Left Middle", "Left Hind", "Right Fore", "Right Middle", "Right Hind"]
+    # legend = ["Left fft", "Left", "Right fft", "Right"]
+    x_plot_interval = [0, -0.5, -1.5, 0, 0.5, 1.5]
+    x_plot_interval_fft = [-0.5, -1, -1.5, 0.5, 1, 1.5]
+    y_plot_interval_fft = [0, 0.5, 1, 0, 0.5, 1]
+    gait_pattern_size = [3, 11, 51, 11, 51, 3]
+    
+    for key, value in genDict[all_experiment[0].folder].items() :
+        genDict_key.append(key)
+      
+    
+    for i in range(0,len(all_experiment)) :
+    # for i in range(0,1) :
+        exp = all_experiment[i]  
+
+        #plot x and y coordinates of the Tarus
+
+        x_pos_all = np.array([])
+        y_pos_all = np.array([])
+        time = np.arange(0,int(exp.total_frame/step))/exp.frame_frequency
+                    
+        """ extracting all the joint positions """
+        x_pos_LF, y_pos_LF = any_coordinates(exp, data.LFtibiaTarsus.x, data.LFtibiaTarsus.y)
+        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LF, y_pos_LF)            
+        
+        x_pos_LM, y_pos_LM = any_coordinates(exp, data.LMtibiaTarsus.x, data.LMtibiaTarsus.y)
+        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LM, y_pos_LM)
+        
+        x_pos_LH, y_pos_LH = any_coordinates(exp, data.LHtibiaTarsus.x, data.LHtibiaTarsus.y)
+        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LH, y_pos_LH)
+        
+        x_pos_RF, y_pos_RF = any_coordinates(exp, data.RFtibiaTarsus.x, data.RFtibiaTarsus.y)
+        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RF, y_pos_RF)
+        
+        x_pos_RM, y_pos_RM = any_coordinates(exp, data.RMtibiaTarsus.x, data.RMtibiaTarsus.y)
+        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RM, y_pos_RM)
+           
+        x_pos_RH, y_pos_RH = any_coordinates(exp, data.RHtibiaTarsus.x, data.RHtibiaTarsus.y)
+        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RH, y_pos_RH)
+
+        
+        
+
+        
+        for j in range(0, len(exp.frame_per_period_tot)-1): 
+            """ SPEED OF LIMB"""
+            plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus gait cycle " + str(stim_key[j]),
+                       figsize = environment.figure_size,
+                       dpi = environment.dpi)
+            plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus gait cycle " + str(stim_key[j]))
+                    
+            gait_pattern = np.zeros((11*6, exp.frame_per_fly - 6))
+            legend_postion = 11*np.arange(6) + 5
 # =============================================================================
-#         """ plot or save """
-#         if environment.bool_save == True:
-#             plt.savefig(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+j]) + " Tarsus position.png")
-#         else:
-#             plt.show()
+#             gait_pattern = np.zeros((gait_pattern_size[j-1]*6, exp.frame_per_fly - 6))
+#             legend_postion = gait_pattern_size[j-1]*np.arange(6) + int(gait_pattern_size[j-1]/2)
 # =============================================================================
+            
+            for l in range(0,6) :
+                start_index = l*exp.frame_per_fly
+                delta_pos = np.array([np.subtract(y_pos_all[k, i+1], y_pos_all[k, i]) for i in range(l*exp.frame_per_fly, (l+1)*exp.frame_per_fly - 1)])
+                SMA_pos = np.array([sum(delta_pos[(i - 5): i]/5) for i in range(5, len(delta_pos))])
+                SMA_speed = SMA_pos/exp.frame_frequency
+                speed_sign = np.heaviside(SMA_speed, 0)
+                speed_sign = np.repeat(speed_sign.reshape((1, len(speed_sign))), 10, axis = 0)
+                # speed_sign = np.sign(SMA_speed)
+                
+                """ plot the on1 sequence"""
+                gait_pattern[11*l : 11*(l+1) - 1 , :] = speed_sign
+            
+            plt.spy(gait_pattern[:, exp.frame_per_period_tot[j]:exp.frame_per_period_tot[j+1]], markersize=1, aspect = "equal", c='k')
+            plt.xticks([])
+            plt.yticks(legend_postion, ("LF", "LM", "LH", "RF", "RM", "RH"))
+            # plt.show()
+
+            """ plot or save """
+            if environment.bool_save == True:
+                plt.savefig(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " Tarsus gait cycle " + str(stim_key[j-1]) + ".png")
+            else:
+                plt.show()
 
     
     
@@ -1084,7 +1016,7 @@ def joint_position_over_time_specific(genDict, data, all_experiment, all_folder,
     """ to save all the figure, bool_save = True"""
 
 global environment
-first_layer = 1
+first_layer = 0
 second_layer = 0
 normalized = 0
 bool_save = True
@@ -1112,6 +1044,9 @@ for i in range(0,4):
 for k in tqdm(range(0,3)):
     joint_position_over_time(genDict, data, all_experiment, all_folder, fly_number = k)
     plt.close("all")
+    gait_cycle(genDict, data, all_experiment, all_folder, fly_number = k)
+    plt.close("all")
+
 # =============================================================================
 #     plot_one_fly_trajectories(genDict, data, all_experiment, normalized = normalized, fly_number = k)
 #     plot_x_position_over_time(genDict, data, all_experiment, all_folder, fly_number = k)
