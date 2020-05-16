@@ -863,9 +863,11 @@ def gait_cycle(genDict, data, all_experiment, all_folder, fly_number = 0):
     return
 
 #%% 
-def joint_position_over_time_specific(genDict, data, all_experiment, all_folder, fly_number = 0, experiment = 0, sequence = 1):
+def joint_position_over_time_specific(genDict, data, all_experiment, all_folder, fly_number = 0, experiment = 0,
+                                      sequence = 1, xmin_time = None, xmax_time = None, markersize = 2):
     
-    k = fly_number    
+    k = fly_number
+    j = sequence    
     exp = all_experiment[experiment]
     
     stim_key = genDict[all_experiment[0].folder]['stimulation_paradigm']
@@ -873,130 +875,174 @@ def joint_position_over_time_specific(genDict, data, all_experiment, all_folder,
     
     legend = []
     genDict_key = []
+    gait_frequency_tot = np.array([])
+    duty_factor_tot = np.array([])
     
     legend = ["Left Fore", "Left Middle", "Left Hind", "Right Fore", "Right Middle", "Right Hind"]
-    x_plot_interval = [0, -0.5, -1.5, 0, 0.5, 1.5]
-    x_plot_interval_fft = [-0.5, -1, -1.5, 0.5, 1, 1.5]
-    y_plot_interval_fft = [0, 0.5, 1, 0, 0.5, 1]
+    legend_short = ["LF", "LM", "LH", "RF", "RM", "RH"]
+    x_plot_interval = [0, 0, -1.5, 0, 0, 1.5]
+
+
     
     for key, value in genDict[all_experiment[0].folder].items() :
         genDict_key.append(key)
       
     
-    for i in range(0,1) :
-        exp = all_experiment[i]  
+    # for i in range(0,1) :
+    # exp = all_experiment[i]  
 
-        #plot x and y coordinates of the Tarus
+    #plot x and y coordinates of the Tarus
 
-        x_pos_all = np.array([])
-        y_pos_all = np.array([])
-        time = np.arange(0,int(exp.total_frame))/exp.frame_frequency
-                    
-        """ extracting all the joint positions """
-        x_pos_LF, y_pos_LF = any_coordinates(exp, data.LFtibiaTarsus.x, data.LFtibiaTarsus.y)
-        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LF, y_pos_LF)            
+    x_pos_all = np.array([])
+    y_pos_all = np.array([])
+    time = np.arange(0,int(exp.total_frame))/exp.frame_frequency
+                
+    """ extracting all the joint positions """
+    x_pos_LF, y_pos_LF = any_coordinates(exp, data.LFclaw.x, data.LFclaw.y)
+    x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LF, y_pos_LF)            
+    
+    x_pos_LM, y_pos_LM = any_coordinates(exp, data.LMclaw.x, data.LMclaw.y)
+    x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LM, y_pos_LM)
+    
+    x_pos_LH, y_pos_LH = any_coordinates(exp, data.LHclaw.x, data.LHclaw.y)
+    x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LH, y_pos_LH)
+    
+    x_pos_RF, y_pos_RF = any_coordinates(exp, data.RFclaw.x, data.RFclaw.y)
+    x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RF, y_pos_RF)
+    
+    x_pos_RM, y_pos_RM = any_coordinates(exp, data.RMclaw.x, data.RMclaw.y)
+    x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RM, y_pos_RM)
+       
+    x_pos_RH, y_pos_RH = any_coordinates(exp, data.RHclaw.x, data.RHclaw.y)
+    x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RH, y_pos_RH)
+    
+    
+    
+    # for j in range(0, len(exp.frame_per_period_tot)-1): 
         
-        x_pos_LM, y_pos_LM = any_coordinates(exp, data.LMtibiaTarsus.x, data.LMtibiaTarsus.y)
-        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LM, y_pos_LM)
-        
-        x_pos_LH, y_pos_LH = any_coordinates(exp, data.LHtibiaTarsus.x, data.LHtibiaTarsus.y)
-        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_LH, y_pos_LH)
-        
-        x_pos_RF, y_pos_RF = any_coordinates(exp, data.RFtibiaTarsus.x, data.RFtibiaTarsus.y)
-        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RF, y_pos_RF)
-        
-        x_pos_RM, y_pos_RM = any_coordinates(exp, data.RMtibiaTarsus.x, data.RMtibiaTarsus.y)
-        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RM, y_pos_RM)
-           
-        x_pos_RH, y_pos_RH = any_coordinates(exp, data.RHtibiaTarsus.x, data.RHtibiaTarsus.y)
-        x_pos_all, y_pos_all = joint_normalized(exp, x_pos_all, y_pos_all, x_pos_RH, y_pos_RH)
-        
+    fig = plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + \
+                        " : position and gait pattern " +  str(stim_key[j]),
+                        figsize = environment.figure_size,
+                        dpi = environment.dpi)
+    
+    gs = fig.add_gridspec(2, 3)
+    ax_y = fig.add_subplot(gs[1, 1:])
+    ax_x = fig.add_subplot(gs[0,0])
+    ax_gait = fig.add_subplot(gs[0, 1:])
+    ax_legend = fig.add_subplot(gs[1,0])
+    
+    gait_pattern = np.zeros((11*6, exp.frame_per_period[j]))
+    y_legend_postion = 11*np.arange(6) + 5
+    
+    
+    for l in range(0,6) :
+        start_index = l*exp.frame_per_fly
         
         """ Y POSITION"""
-        for j in range(1, len(exp.frame_per_period_tot)): 
-            
-            """ plotting the y position"""
-            plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus y position " +  str(stim_key[j-1]),
-                       figsize = environment.figure_size,
-                       dpi = environment.dpi)
-            plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus y position " +  str(stim_key[j-1]))
+        ax_y.plot(time[: exp.frame_per_period[j]], 
+                  y_pos_all[k, start_index + exp.frame_per_period_tot[j] : start_index + exp.frame_per_period_tot[j+1]])
+        
+        """ X POSITION"""
+        ax_x.plot(x_pos_all[k, start_index + exp.frame_per_period_tot[j] : start_index + exp.frame_per_period_tot[j+1]] + x_plot_interval[l],
+                 time[: exp.frame_per_period[j]])
+        
+        """ LEGEND"""
+        ax_legend.plot(-1, -1)
+        
+        """ GAIT PATTERN"""
+        SMA_speed = pos2vel(y_pos_all[:, start_index + exp.frame_per_period_tot[j] : start_index + exp.frame_per_period_tot[j+1]])[k,:] 
+        SMA_speed_thresold = [0 if -1.5 < speed < 1.5 else speed for speed in SMA_speed]
+        # apply -1 to have the stance phase in black and the swing phase in white               
+        speed_sign = np.heaviside(SMA_speed_thresold, 1)
+        speed_sign = np.repeat(speed_sign.reshape((1, len(speed_sign))), 11 - 1, axis = 0)
+        
+# =============================================================================
+#         duty_factor = np.count_nonzero(speed_sign[1,:])/speed_sign.shape[1]
+#         print("%s duty factor = %.2f" %(legend_short[l], duty_factor))
+# =============================================================================
 
-            for l in range(0,6) :
-                start_index = l*exp.frame_per_fly
-                plt.plot(time[exp.frame_per_period_tot[j-1] : exp.frame_per_period_tot[j]], 
-                         y_pos_all[k, start_index + exp.frame_per_period_tot[j-1] : start_index + exp.frame_per_period_tot[j]])
-                                       
-            plt.ylabel("y joint position [mm]")
-            plt.xlabel("time")
-            plt.ylim(4.5,0)
-            plt.legend(legend, loc=1, fontsize = 6)
-            
-            """ plot or save """
-            if environment.bool_save == True:
-                plt.savefig(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " Tarsus y position " +  str(stim_key[j-1]) + ".png")
-            else:
-                plt.show()
-            
-            
-            
-            
-        """ plotting the y position all in one"""
-        plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus y position",
-                   figsize = environment.figure_size,
-                   dpi = environment.dpi)
-        plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus y position")
-            
-        for l in range(0,6) :               
-            plt.plot(time, y_pos_all[k, l*exp.frame_per_fly : (l+1)*exp.frame_per_fly])
-                                       
-        plt.ylabel("y joint position [mm]")
-        plt.xlabel("time")
-        plt.xlim(0,30)
-        plt.ylim(4.5,0)
-        plt.legend(legend, loc=1, fontsize = 6)
         
+
+        gait_pattern[11*l : 11*(l+1) - 1, :] = speed_sign 
         
-        """ vertical line to separate each sequence"""      
-        stim_time = np.array(exp.frame_per_period_tot[1:])/exp.frame_frequency
-        plt.axvline(0, ymin = -30, ymax = 30, c='k', ls='--')
-        for l in range(0, len(exp.frame_per_period)):
-            plt.axvline(stim_time[l], ymin = -30, ymax = 30, c='k', ls='--')
-        
-        """ plot or save """
-        if environment.bool_save == True:
-            plt.savefig(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " Tarsus y position.png")
-        else:
-            plt.show()
-            
-#################### put both in common ################### 
-            
-  
     
-            """ SPEED OF LIMB"""
-        plt.figure(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus y speed",
-                   figsize = environment.figure_size,
-                   dpi = environment.dpi)
-        plt.title(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + " : Tarsus y speed")
-                
-        gait_pattern = np.zeros((11*6, exp.frame_per_fly - 6))
-        legend_postion = 11*np.arange(6) + 5
+    if xmin_time != None :
+        xmin_time = int(xmin_time*exp.frame_frequency)/exp.frame_frequency
+        if xmax_time != None:
+            xmax_time = int(xmax_time*exp.frame_frequency)/exp.frame_frequency
+        else:
+            xmax_time = time[exp.frame_per_period[j]]
+        xmin_frame = 0
+        xmax_frame = (xmax_time - xmin_time)*exp.frame_frequency
+        zoom_effect(ax_y, ax_gait, xmin_time, xmax_time, xmin_frame, xmax_frame)
+        ax_gait.spy(gait_pattern[:, int(xmin_time*exp.frame_frequency) : int(xmax_time*exp.frame_frequency)], \
+                                 markersize=markersize, aspect = "auto", c= "k")
         
-        for l in range(0,6) :
-            start_index = l*exp.frame_per_fly
-            delta_pos = np.array([np.subtract(y_pos_all[k, i+1], y_pos_all[k, i]) for i in range(l*exp.frame_per_fly, (l+1)*exp.frame_per_fly - 1)])
-            SMA_pos = np.array([sum(delta_pos[(i - 5): i]/5) for i in range(5, len(delta_pos))])
-            SMA_speed = SMA_pos/exp.frame_frequency
-            speed_sign = np.heaviside(SMA_speed, 0)
-            speed_sign = np.repeat(speed_sign.reshape((1, len(speed_sign))), 10, axis = 0)
-            # speed_sign = np.sign(SMA_speed)
+        for i in range(0,6):
+            sequence = gait_pattern[11*i, int(xmin_time*exp.frame_frequency) : int(xmax_time*exp.frame_frequency)]
+            duty_factor = np.count_nonzero(sequence)/len(sequence)
+            duty_factor_tot = np.append(duty_factor_tot, duty_factor)           
             
-            """ plot the on1 sequence"""
-            gait_pattern[11*l : 11*l + 10, :] = speed_sign
             
-        plt.spy(gait_pattern[:, exp.frame_per_period_tot[1]:exp.frame_per_period_tot[2]], markersize=1, aspect = "equal", c='k')
-        plt.xticks([])
-        plt.yticks(legend_postion, ("LF", "LM", "LH", "RF", "RM", "RH"))
-        plt.show()
+            # count the occurence of 1 --> count the number of time you switch from swing leg to stance leg
+            # cycle/s
+            edge_detector = np.hstack((0, [sequence[j+1] - sequence[j] for j in range(0, len(sequence)-1)]))
+            gait_frequency = exp.frame_frequency * np.count_nonzero(edge_detector == 1)/len(sequence)
+            gait_frequency_tot = np.append(gait_frequency_tot, gait_frequency)
+            
+            print("%s duty factor = %.2f \t gait frequency  = %.2f [cycle/s]" %(legend_short[i], duty_factor, gait_frequency))
+    
+    else:
+        ax_gait.spy(gait_pattern, markersize=markersize, aspect = "auto", c='k')
+        
+        for i in range(0,6):
+            sequence = gait_pattern[11*i, :]
+            duty_factor = np.count_nonzero(sequence)/len(sequence)
+            duty_factor_tot = np.append(duty_factor_tot, duty_factor)
+            
+            # count the occurence of 1 --> count the number of time you switch from swing leg to stance leg
+            # cycle/s
+            edge_detector = np.hstack((0, [sequence[j+1] - sequence[j] for j in range(0, len(sequence)-1)]))
+            gait_frequency = exp.frame_frequency * np.count_nonzero(edge_detector == 1)/len(sequence)
+            gait_frequency_tot = np.append(gait_frequency_tot, gait_frequency)
+            
+            print("%s duty factor = %.2f \t gait frequency = %.2f [cycle/s]" %(legend_short[i], duty_factor, gait_frequency))
+
+    print("\nAverage duty factor = %.2f" %(np.mean(duty_factor_tot)))  
+    print("Average gait frequency = %.2f" %(np.mean(gait_frequency_tot)))
+
+        
+    ax_y.set_ylim(5.5,-0.5)
+    ax_y.set_xlim(0, time[exp.frame_per_period[j]])
+    ax_y.set_xlabel("time [s]")
+    ax_y.set_yticks([])
+                                  
+    ax_x.set_ylabel("time [s]")
+    ax_x.set_xticks([])
+    ax_x.set_xlim(-0.5 ,6.5)
+    ax_x.set_ylim(0, time[exp.frame_per_period[j]])
+    
+
+    ax_legend.axis('off')
+    ax_legend.legend(legend, fontsize = 12)
+
+        
+    ax_gait.set_xticks([])
+    
+    plt.sca(ax_gait)
+    plt.yticks(y_legend_postion, legend_short)
+ 
+    plt.suptitle(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + \
+                 " : position and gait pattern " +  str(stim_key[j]))
+        
+    """ plot or save """
+    if environment.bool_save == True:
+        fig.savefig(str(exp.simulation) + " " + str(exp.folder[7:13]) + " " + str(genDict_key[2+k]) + \
+                 " position and gait pattern " +  str(stim_key[j]) + ".png")
+    else:
+        fig.show()
+
+    return
 
     
 #%%
