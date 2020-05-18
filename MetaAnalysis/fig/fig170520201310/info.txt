@@ -1,0 +1,5 @@
+Perplexity = 50
+Decimate = True
+GroupByFly = False
+
+Size: 36960x(240)
