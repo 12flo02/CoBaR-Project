@@ -1,4 +1,0 @@
-perplexity = 50
-groupByFly = False
-decimate = False
-state =  17052020

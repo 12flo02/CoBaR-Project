@@ -1,5 +1,0 @@
-average = False
-groupByFly = True
-seed = 42
-
-Nx(K*L) => 105 x 168960

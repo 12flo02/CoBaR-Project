@@ -1,4 +1,0 @@
-average = False
-seed = 42
-
-(N*L)xK => 73092x240
