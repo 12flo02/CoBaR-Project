@@ -7,18 +7,18 @@ from wavelet import findWavelets, normalizeFrames
 
 def runPipeline(raw_pretarsi_data, raw_metadata, n_trial_data, 
                 groupByFly=False, decimate=False, pca=False):
-    stim_data = findStimulationData(raw_pretarsi_data, raw_metadata)
-    print(f'Stimulation data - number of flies: {len(stim_data)}')
-    print(f'Dimension of an observation {stim_data[next(iter(stim_data))].shape} \n')
-    
     print('Wavelet transformation...')
-    wavelet_data = findWavelets(stim_data)
+    wavelet_data = findWavelets(raw_pretarsi_data)
     print('Wavelet transform: Done')
 
     normalized_wavelet_data = normalizeFrames(wavelet_data)
     print('Frame normalization: Done')
     
-    normalized_wavelet_array, min_nFrames = dict2array(normalized_wavelet_data, nCoords=40, 
+    stim_data = findStimulationData(normalized_wavelet_data, raw_metadata)
+    print(f'Stimulation data - number of flies: {len(stim_data)}')
+    print(f'Dimension of an observation {stim_data[next(iter(stim_data))].shape} \n')
+    
+    normalized_wavelet_array, min_nFrames = dict2array(stim_data, nCoords=40, 
                                                    groupByFly=groupByFly, decimate=decimate)
     print(f'Conversion to array - data shape: {normalized_wavelet_array.shape} \n')
     
