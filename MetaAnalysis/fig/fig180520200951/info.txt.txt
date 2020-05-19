@@ -1,0 +1,3 @@
+PCA = True (33 dim)
+groupByFly = False
+decimate = False

@@ -22,26 +22,21 @@ def findWavelets(stim_data):
     
     wavelet_data = {}
 
-    n_scales = 20
-    fps = 80
-    f_min = 1
-    f_max = fps/2
-    #logvar_thresh = -6.
+    n_scales = 20 # Number of frequencies used for wavelet transformation
+    fps = 80 # Frame rate
+    f_min = 1 # Minimum frequency for wavelet transform
+    f_max = fps/2 # Nyquist frequency
 
     for (key, data) in stim_data.items():
         wavelet_data[key] = np.zeros((list(data.shape) + [n_scales]))
 
-        # Wavelet transformation
+        # Wavelet-transformation for each feature
         for i in range(data.shape[1]):
+            # Take amplitude of wavelet
             sig = abs(signal.cwt(data[:,i], signal.morlet2, np.geomspace(f_min, f_max, n_scales)).T)
 
             wavelet_data[key][:,i,:] = sig
-
+        
         wavelet_data[key] = wavelet_data[key].reshape(wavelet_data[key].shape[0],
                                                       wavelet_data[key].shape[1]*wavelet_data[key].shape[2])
-
-        # Frame-normalization
-        for t in range(wavelet_data[key].shape[0]):
-            wavelet_data[key][t,:] = wavelet_data[key][t,:]/(wavelet_data[key][t,:].sum())
-    
     return wavelet_data
