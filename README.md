@@ -4,10 +4,10 @@ To run the project the architecture the dataset should be downloaded as *CoBar-D
 In other words, the required architecture is:
    - CoBar-Dataset/ -> which contains raw data from each strain
    - Meta_Analysis/ -> which contains the code for clustering 
-   - Kinematic_Analysis/ -> which contains "Part_III_Results.py"
+   - Results/ -> which contains "Part_III.py"
    - other files in this repository
 
-Kinematic data analysis can be performed by running "Part_III_Results.py".
+Kinematic data analysis can be performed by running "Part_III.py".
 
 Meta_Analysis/: runs the kernel density estimations for the Bonus question in Part 4.
 
